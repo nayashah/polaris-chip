@@ -11,12 +11,30 @@ export class MyCard extends LitElement {
     this.name = "Dog Breed: Golden Retrievers are the best!";
     this.link = "https://dogtime.com/dog-breeds/golden-retriever";
     this.imageSrc = "https://www.mygoldenretrieverpuppies.com/wp-content/uploads/2022/06/Golden-Retriever-Puppies-1024x683.jpeg";
+    this.fancy = false;
+    this.description = "The Golden Retriever was developed in Scotland in the nineteenth century by Sir Dudley Marjoribanks (later to become Baron Tweedmouth) from Flat-coated Retrievers judiciously crossed with Tweed Water Spaniels and some other British dog breeds.";
+  }
+
+  static get properties() {
+    return {
+      fancy: { type: Boolean, reflect: true },
+      name: { type: String },
+      link: { type: String },
+      imageSrc: { type: String },
+      description: { type: String }
+    };
   }
 
   static get styles() {
     return css`
       :host {
         display: block;
+      }
+
+      :host([fancy]) {
+        background-color: lightblue;
+        border: 2px solid fuchsia;
+        box-shadow: 10px 5px 5px red;
       }
 
       .card {
@@ -31,21 +49,12 @@ export class MyCard extends LitElement {
         font-size: 16px;
       }
 
-      button_a {
-        border-style: bold;
-        padding: 8px;
-        color: white;
-        background-color: black;
-        width: 50%;
-        font-size: 16px;
-      }
-
       button {
         padding: 6px 8px;
         color: white;
         background-color: black;
         border-radius: 6px;  
-        width: 10%;
+        width: 50%;
         font-size: 16px;    
         margin: 3px;        
       }
@@ -59,32 +68,62 @@ export class MyCard extends LitElement {
         color: black;
       }
 
-      button:hover, a:hover {
-        opacity: 0.8;
+      img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+      }
+
+      details summary {
+        text-align: left;
+        font-size: 20px;
+        padding: 8px 0;
+      }
+
+      details[open] summary {
+        font-weight: bold;
+      }
+
+      details div {
+        border: 2px solid black;
+        text-align: left;
+        padding: 8px;
+        height: 70px;
+        overflow: auto;
       }
     `;
+  }
+
+  // This method listens for the toggle event
+  openChanged(e) {
+    if (e.target.hasAttribute('open')) {
+      this.fancy = true;
+    } else {
+      this.fancy = false;
+    }
   }
 
   render() {
     return html`
       <div class="card">
-        <img src="${this.imageSrc}" alt="Image" style="width:100%">
+        <img src="${this.imageSrc}" alt="Image">
         <div class="container">
-          <h4 class="name"><b>${this.name}</b></h4>
+          <h4 class="title"><b>${this.name}</b></h4>
           <a href="${this.link}">Golden Retriever</a>
-          <p><button_a>Adopt Today!</button_a></p>
+          <p><button>Adopt Today!</button></p>
+          
+          <!-- Add details/summary for description -->
+          <details ?open="${this.fancy}" @toggle="${this.openChanged}">
+            <summary>Description</summary>
+            <div>
+              ${this.description}  <!-- Render the description stored in the constructor -->
+            </div>
+          </details>
         </div>
       </div>
     `;
   }
-
-  static get properties() {
-    return {
-      name: { type: String },
-      link: { type: String },
-      imageSrc: { type: String },
-    };
-  }
 }
 
-globalThis.customElements.define(MyCard.tag, MyCard);
+customElements.define(MyCard.tag, MyCard);
